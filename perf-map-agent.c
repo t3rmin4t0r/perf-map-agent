@@ -1,7 +1,15 @@
+#include <stdlib.h>
+#include <string.h>
 #include <jni.h>
 #include <jvmti.h>
 
 FILE *method_file = NULL;
+
+void open_file() {
+    char methodFileName[500];
+    sprintf(methodFileName, "/tmp/perf-%d.map", getpid());
+    method_file = fopen(methodFileName, "w");
+}
 
 void JNICALL
 cbVMInit(jvmtiEnv *jvmti_env,
@@ -9,12 +17,6 @@ cbVMInit(jvmtiEnv *jvmti_env,
             jthread thread) {
     if (!method_file)
         open_file();
-}
-
-void open_file() {
-    char methodFileName[500];
-    sprintf(methodFileName, "/tmp/perf-%d.map", getpid());
-    method_file = fopen(methodFileName, "w");
 }
 
 static void JNICALL
