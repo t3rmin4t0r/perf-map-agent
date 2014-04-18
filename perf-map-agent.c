@@ -45,7 +45,7 @@ cbCompiledMethodLoad(jvmtiEnv *env,
     char *csig;
     (*env)->GetClassSignature(env, class, &csig, NULL);
 
-    fprintf(method_file, "%lx %x %s.%s%s\n", code_addr, code_size, csig, name, msig);
+    fprintf(method_file, "%lx %x %s::%s%s\n", code_addr, code_size, csig, name, msig);
     fsync(fileno(method_file));
     (*env)->Deallocate(env, name);
     (*env)->Deallocate(env, msig);
