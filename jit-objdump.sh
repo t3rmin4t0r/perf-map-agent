@@ -10,7 +10,7 @@ if [[ $_last =~ /tmp/perf- ]]; then
 	pid=$(echo $_last | sed -e "s/.map//" -e "s@/tmp/perf-@@")
 	tmp=$(mktemp)
 	gdb --batch --pid $pid -ex "dump memory $tmp $_start $_stop" &> /tmp/gdb.log && \
-	objdump --adjust-vma=$_start  -D -b binary -mi386:x86-64 $tmp;
+	objdump --adjust-vma=$_start  -D --no-show-raw -b binary -mi386:x86-64 $tmp | grep -v $tmp;
 	rm $tmp;
 else
 	objdump $*
