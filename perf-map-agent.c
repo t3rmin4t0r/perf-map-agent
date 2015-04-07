@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#include <stdlib.h>
-#include <string.h>
-=======
 /*
  *   libperfmap: a JVM agent to create perf-<pid>.map files for consumption
  *               with linux perf-tools
