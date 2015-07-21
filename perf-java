@@ -2,13 +2,16 @@
 PID=$1
 OPTIONS=$2
 PERF_MAP_FILE=/tmp/perf-$PID.map
+BASEDIR=$(dirname $0)
+PUSER=$(ps -o user -p $PID | sed 1d)
 
 if [ -p $JAVA_HOME ]; then
   JAVA_HOME=/usr/lib/jvm/default-java
   [ -d $JAVA_HOME ] || JAVA_HOME=/etc/alternatives/java_sdk
 fi
 
-java -cp attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
-sudo chown root:root $PERF_MAP_FILE
-sudo perf top -p $PID
-sudo rm $PERF_MAP_FILE
+cd $BASEDIR
+sudo -u $PUSER java -cp $BASEDIR/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
+chown root:root $PERF_MAP_FILE
+perf top -p $PID --objdump=$BASEDIR/jit-objdump.sh
+rm $PERF_MAP_FILE
