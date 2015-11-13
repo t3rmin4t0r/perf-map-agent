@@ -11,13 +11,11 @@ if [ `id -u` -ne 0 ] ; then
   exit 1
 fi
 
-if [ -p $JAVA_HOME ]; then
-  JAVA_HOME=/usr/lib/jvm/default-java
-  [ -d $JAVA_HOME ] || JAVA_HOME=/etc/alternatives/java_sdk
-fi
+JAVA=$(cat /proc/$PID/cmdline | tr '\000' '\n' | head -n 1)
+JAVA_HOME=$(dirname $JAVA)/../
 
 cd $BASEDIR
-sudo -u $PUSER java -cp $BASEDIR/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
+sudo -u $PUSER $JAVA -cp $BASEDIR/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
 chown root:root $PERF_MAP_FILE
 perf top -p $PID --objdump=$BASEDIR/jit-objdump.sh
 rm $PERF_MAP_FILE
