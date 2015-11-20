@@ -7,9 +7,9 @@ BASEDIR=$(dirname $0)
 PUSER=$(ps -o user -p $PID | sed 1d)
 
 # Make sure only root can run our script
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root/sudo" 1>&2
-   exit 1
+if [ `id -u` -ne 0 ] ; then
+  echo "This script must be run as root/sudo" 1>&2
+  exit 1
 fi
 
 JAVA=$(cat /proc/$PID/cmdline | tr '\000' '\n' | head -n 1)
@@ -21,7 +21,9 @@ chmod a+r /tmp/attach-main.jar
 cd $BASEDIR
 sudo -u $PUSER $JAVA_HOME/bin/java -cp /tmp/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
 chown root:root $PERF_MAP_FILE
+
 PATH=$BASEDIR:$PATH perf top -p $PID # --objdump=$BASEDIR/jit-objdump.sh
+
 rm $PERF_MAP_FILE
 
 if test "x$(which gdb)" = "x"; then
