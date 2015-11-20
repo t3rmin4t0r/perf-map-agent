@@ -17,6 +17,7 @@ find_package(Java REQUIRED)
 include(UseJava)
 
 set(CMAKE_JAVA_INCLUDE_PATH ${JAVA_INCLUDE_PATH}/../lib/tools.jar)
+set(CMAKE_JAVA_COMPILE_FLAGS -source 1.6)
 
 message(STATUS "LIBS: ${Java_JAR_EXECUTABLE} ${Java_INCLUDE_DIRS} incl: ${CMAKE_JAVA_INCLUDE_PATH}")
 

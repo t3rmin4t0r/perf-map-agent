@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 PID=$1
 OPTIONS=$2
 PERF_MAP_FILE=/tmp/perf-$PID.map
@@ -11,13 +12,18 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ -p $JAVA_HOME ]; then
-  JAVA_HOME=/usr/lib/jvm/default-java
-  [ -d $JAVA_HOME ] || JAVA_HOME=/etc/alternatives/java_sdk
-fi
+JAVA=$(cat /proc/$PID/cmdline | tr '\000' '\n' | head -n 1)
+JAVA_HOME=$(dirname $JAVA)/../
+
+cp $BASEDIR/attach-main.jar /tmp/
+chmod a+r /tmp/attach-main.jar
 
 cd $BASEDIR
-sudo -u $PUSER java -cp $BASEDIR/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
+sudo -u $PUSER $JAVA_HOME/bin/java -cp /tmp/attach-main.jar:$JAVA_HOME/lib/tools.jar net.virtualvoid.perf.AttachOnce $PID $OPTIONS
 chown root:root $PERF_MAP_FILE
-perf top -p $PID --objdump=$BASEDIR/jit-objdump.sh
+PATH=$BASEDIR:$PATH perf top -p $PID # --objdump=$BASEDIR/jit-objdump.sh
 rm $PERF_MAP_FILE
+
+if test "x$(which gdb)" = "x"; then
+  echo "It is a good idea to install gdb for perf-java"
+fi
