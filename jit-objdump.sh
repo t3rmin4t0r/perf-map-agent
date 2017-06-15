@@ -13,5 +13,5 @@ if [[ $_last =~ /tmp/perf- ]]; then
 	/usr/bin/objdump --adjust-vma=$_start  -D --no-show-raw -b binary -mi386:x86-64 $tmp | grep -v $tmp;
 	rm $tmp;
 else
-	objdump $*
+	/bin/objdump $*
 fi
